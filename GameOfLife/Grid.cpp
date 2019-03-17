@@ -106,7 +106,9 @@ Grid::Grid(unsigned int sizeX, unsigned int sizeY)
 
 void Grid::printGrid()
 {
+
 	gotoxy(0, 0);
+
 	for (int i = 0; i < sizeX; i++)
 	{
 		for (int j = 0; j < sizeY; j++)
@@ -121,6 +123,7 @@ void Grid::printGrid()
 			
 		}
 		std::cout << endl;
+
 	}
 }
 
@@ -142,6 +145,16 @@ void Grid::navigate()
 
 	while (true)
 	{
+		if (x < 0)
+			x = sizeX - 1;
+		else if (x >= sizeX)
+			x = 0;
+
+		if (y < 0)
+			y = sizeY - 1;
+		else if (x >= sizeY)
+			y = 0;
+
 		if (_kbhit())			// save sign if it is avaiable 
 		{
 			sign = _getch();
@@ -161,7 +174,7 @@ void Grid::navigate()
 			}
 			cells[x][y].setStatus(!cells[x][y].getStatus());		// blinkind
 
-			if (sign == 's' && y < sizeY - 1 && hasTimeElapsed(navigationInterval, currentTimeNavigation))
+			if (sign == 's' && hasTimeElapsed(navigationInterval, currentTimeNavigation))
 			{
 				cells[x][y].setStatus(prevStatus);
 				sign = 0;
@@ -169,7 +182,7 @@ void Grid::navigate()
 				saved = false;
 				auto currentTime = chrono::high_resolution_clock::now();
 			}
-			else if (sign == 'w' && y > 0 && hasTimeElapsed(navigationInterval, currentTimeNavigation))
+			else if (sign == 'w' && hasTimeElapsed(navigationInterval, currentTimeNavigation))
 			{
 				cells[x][y].setStatus(prevStatus);
 				sign = 0;
@@ -177,7 +190,7 @@ void Grid::navigate()
 				saved = false;
 				auto currentTime = chrono::high_resolution_clock::now();
 			}
-			else if (sign == 'd' && x < sizeX - 1 && hasTimeElapsed(navigationInterval, currentTimeNavigation))
+			else if (sign == 'd' && hasTimeElapsed(navigationInterval, currentTimeNavigation))
 			{
 				cells[x][y].setStatus(prevStatus);
 				sign = 0;
@@ -185,7 +198,7 @@ void Grid::navigate()
 				saved = false;
 				auto currentTime = chrono::high_resolution_clock::now();
 			}
-			else if (sign == 'a' && x > 0 && hasTimeElapsed(navigationInterval, currentTimeNavigation))
+			else if (sign == 'a' && hasTimeElapsed(navigationInterval, currentTimeNavigation))
 			{
 				cells[x][y].setStatus(prevStatus);
 				sign = 0;
@@ -200,37 +213,59 @@ void Grid::navigate()
 				saved = false;
 				auto currentTime = chrono::high_resolution_clock::now();
 			}
-			else if (sign == 'g')
+			else if (sign == 'v')
+			{
+				cells[x][y].setStatus(!prevStatus);
 				break;
+			}
 			else
 				sign = 0;
 		}
-
-
 	}
 }
 
-unsigned int Grid::checkNeighbourhood(vector <vector<Cell>> cells, int x, int y)
+unsigned int Grid::checkNeighbourhood(vector <vector<Cell>> cells, int x, int y, bool verticalCondition, bool horizontalCondition)
 {
 	unsigned int neighbours = 0;
+	short int X[3] = { x - 1, x, x + 1 };
+	short int Y[3] = { y - 1, y, y + 1 };
 
-	if (x - 1 >= 0 && y - 1 >= 0 && cells[x - 1][y - 1].getStatus() == true)
+	// vertical condition
+	if (verticalCondition)
+	{
+		if (x - 1 < 0)
+			X[0] = sizeX - 1;
+		if (X[2] == sizeX)
+			X[2] = 0;
+	}
+
+	// horizontal condition 
+	if (horizontalCondition)
+	{
+		if (y - 1 < 0)
+			Y[0] = sizeY - 1;
+		if (Y[2] == sizeY)
+			Y[2] = 0;
+	}
+
+
+	if (X[0] >= 0 && Y[0] >= 0 && cells[X[0]][Y[0]].getStatus() == true)
 		neighbours++;
-	if (x - 1 >= 0 && cells[x - 1][y].getStatus() == true)
+	if (X[0] >= 0 && cells[X[0]][Y[1]].getStatus() == true)
 		neighbours++;
-	if (x - 1 >= 0 && y + 1 < sizeY && cells[x - 1][y + 1].getStatus() == true)
+	if (X[0] >= 0 && Y[2] < sizeY && cells[X[0]][Y[2]].getStatus() == true)
 		neighbours++;
 
-	if (y - 1 >= 0 && cells[x][y - 1].getStatus() == true)
+	if (Y[0] >= 0 && cells[X[1]][Y[0]].getStatus() == true)
 		neighbours++;
-	if (y + 1 < sizeY && cells[x][y + 1].getStatus() == true)
+	if (Y[2] < sizeY && cells[X[1]][Y[2]].getStatus() == true)
 		neighbours++;
 
-	if (y - 1 >= 0 && x + 1 < sizeX && cells[x + 1][y - 1].getStatus() == true)
+	if (X[2] < sizeX && Y[0] >= 0 && cells[X[2]][Y[0]].getStatus() == true)
 		neighbours++;
-	if (x + 1 < sizeX && cells[x + 1][y].getStatus() == true)
+	if (X[2] < sizeX && cells[X[2]][Y[1]].getStatus() == true)
 		neighbours++;
-	if (y + 1 < sizeY && x + 1 < sizeX && cells[x + 1][y + 1].getStatus() == true)
+	if (X[2] < sizeX && Y[2] < sizeY && cells[X[2]][Y[2]].getStatus() == true)
 		neighbours++;
 
 	return neighbours;
@@ -248,7 +283,7 @@ void Grid::printStatus()
 	}
 }
 
-void Grid::calculateNextGeneration()
+void Grid::calculateNextGeneration(bool verticalCondition, bool horizontalCondition)
 {
 	vector<vector<Cell>> previous = cells;
 
@@ -258,7 +293,7 @@ void Grid::calculateNextGeneration()
 		{
 			bool isAlive = previous[i][j].getStatus();
 			previousStatus[i][j] = isAlive;							//saving status previous iteration to matrix 
-			int neighbours = checkNeighbourhood(previous, i, j);
+			int neighbours = checkNeighbourhood(previous, i, j, verticalCondition, horizontalCondition);
 
 			//if (neighbours < 2)
 			//	cells[i][j].setStatus(false);
@@ -305,16 +340,23 @@ bool Grid::hasTimeElapsed(unsigned long millis, high_resolution_clock::time_poin
 	return false;
 }
 
-void Grid::start(unsigned long interval)
+void Grid::start(unsigned long interval, bool verticalCondition, bool horizontalCondition)
 {
 	auto currentTime = chrono::high_resolution_clock::now();
+	bool isCalculated = false;
 	while (true)
 	{
+		/*if (!isCalculated)
+		{
+			calculateNextGeneration();
+			isCalculated = true;
+		}*/
 		if (hasTimeElapsed(interval, currentTime))
 		{
 			currentTime = chrono::high_resolution_clock::now();
-			calculateNextGeneration();
+			calculateNextGeneration(verticalCondition, horizontalCondition);
 			printGrid();
+			isCalculated = false;
 		}
 		
 	}
