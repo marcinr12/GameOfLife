@@ -11,8 +11,7 @@ class Cell
 
 public:
 	Cell();
-	Cell(const Cell &cell);
-	Cell(unsigned int, unsigned int, bool status);
+	Cell(unsigned int, unsigned int);
 
 	void setPossisionX(unsigned int);
 	void setPossisionY(unsigned int);

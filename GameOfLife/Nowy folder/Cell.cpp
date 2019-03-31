@@ -8,22 +8,12 @@ Cell::Cell()
 	cellNumber++;
 }
 
-Cell::Cell(const Cell & cell)
-{
-	ID = cellNumber;
-	cellNumber++;
-	this->possisionX = cell.possisionX;
-	this->possisionY = cell.possisionY;
-	this->status = cell.status;
-}
-
-Cell::Cell(unsigned int x, unsigned int y, bool status)
+Cell::Cell(unsigned int x, unsigned int y)
 {
 	ID = cellNumber;
 	cellNumber++;
 	possisionX = x;
 	possisionY = y;
-	this->status = status;
 }
 
 void Cell::setPossisionX(unsigned int x)

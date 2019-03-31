@@ -5,8 +5,6 @@
 #include <memory>
 #include <chrono>
 #include "Cell.h"
-#include <string>
-#include "fileManagement.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -17,28 +15,25 @@ class Grid
 public:
 	unsigned int sizeX = 0;
 	unsigned int sizeY = 0;
-	vector <vector<shared_ptr<Cell>>> cells;
+	vector <vector<Cell>> cells;
 	vector <vector<int>> previousStatus;
 
 public:
 	Grid() = delete;
 	Grid(unsigned int, unsigned int);
 
+	vector<vector<Cell>> getCells();
 	shared_ptr<Cell> getCell(int, int);
-	unsigned int getSizeX();
-	unsigned int getSizeY();
+	Cell* getCellRaw(int, int);
 
 	void printGrid();
-	void clearGrid();
 	void navigate();
-	unsigned int checkNeighbourhood(vector <vector<bool>>, int, int, bool verticalCondition, bool horizontalCondition);
+	unsigned int checkNeighbourhood(vector <vector<Cell>>, int, int, bool verticalCondition, bool horizontalCondition);
+	void printStatus();
 	void calculateNextGeneration(bool verticalCondition, bool horizontalConditiontion);
 	void gotoxy(unsigned int, unsigned int);
 	bool hasTimeElapsed(unsigned long, high_resolution_clock::time_point);
 	void start(unsigned long, bool verticalCondition, bool horizontalCondition);
-
-	string encodeGrid();
-	vector<vector<bool>> decodeGrid(string);
-	void loadDecodedGrid(vector<vector<bool>>);
 	
+
 };
