@@ -1,0 +1,1 @@
+del *.ipch /s

@@ -1,4 +1,6 @@
 #pragma once
+#include <SFML/Graphics.hpp>
+
 #include <iostream>
 #include <vector>
 #include <Windows.h>
@@ -10,11 +12,11 @@
 
 using namespace std;
 using namespace std::chrono;
+using namespace sf;
 
 class Grid
 {
-//private:
-public:
+
 	unsigned int sizeX = 0;
 	unsigned int sizeY = 0;
 	vector <vector<shared_ptr<Cell>>> cells;
@@ -22,20 +24,19 @@ public:
 
 public:
 	Grid() = delete;
-	Grid(unsigned int, unsigned int);
+	Grid(unsigned int sizeX, unsigned int sizeY);
+	Grid(unsigned int sizeX, unsigned int sizeY, unsigned int windowHeight, unsigned int windowWidth);
 
 	shared_ptr<Cell> getCell(int, int);
 	unsigned int getSizeX();
 	unsigned int getSizeY();
 
-	void printGrid();
+	void printGridSFML(RenderWindow&, unsigned int, unsigned int);
+	void eventListeners(RenderWindow&, Event&);
 	void clearGrid();
-	void navigate();
 	unsigned int checkNeighbourhood(vector <vector<bool>>, int, int, bool verticalCondition, bool horizontalCondition);
 	void calculateNextGeneration(bool verticalCondition, bool horizontalConditiontion);
-	void gotoxy(unsigned int, unsigned int);
-	bool hasTimeElapsed(unsigned long, high_resolution_clock::time_point);
-	void start(unsigned long, bool verticalCondition, bool horizontalCondition);
+	void oneGenerationBack();
 
 	string encodeGrid();
 	vector<vector<bool>> decodeGrid(string);

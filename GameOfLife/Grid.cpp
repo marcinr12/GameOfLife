@@ -2,8 +2,6 @@
 #include "conio.h"
 #include <chrono>
 
-
-
 Grid::Grid(unsigned int sizeX, unsigned int sizeY)
 {
 	this->sizeX = sizeX;
@@ -37,6 +35,31 @@ Grid::Grid(unsigned int sizeX, unsigned int sizeY)
 	SetConsoleCursorInfo(out, &cursorInfo);
 }
 
+Grid::Grid(unsigned int sizeX, unsigned int sizeY, unsigned int windowHeight, unsigned int windowWidth)
+{
+	this->sizeX = sizeX;
+	this->sizeY = sizeY;
+	double dX = (windowWidth * 1.0) / sizeX;
+	double dY = (windowHeight * 1.0) / sizeY;
+
+	cells.resize(sizeX);
+	previousStatus.resize(sizeX);
+	for (int i = 0; i < sizeX; i++)
+	{
+		cells[i].resize(sizeY);
+		previousStatus[i].resize(sizeY);
+	}
+
+	for (int i = 0; i < sizeX; i++)
+	{
+		for (int j = 0; j < sizeY; j++)
+		{
+			cells[i][j] = make_shared<Cell>(i * dX, j * dY, false);
+			previousStatus[i][j] = -1;
+		}
+	}
+}
+
 shared_ptr<Cell> Grid::getCell(int x, int y)
 {
 	
@@ -54,26 +77,35 @@ unsigned int Grid::getSizeY()
 	return sizeY;
 }
 
-void Grid::printGrid()
+void Grid::printGridSFML(RenderWindow &appWindow, unsigned int windowSizeX, unsigned int windowSizeY)
 {
-
-	gotoxy(0, 0);
-
 	for (int i = 0; i < sizeX; i++)
 	{
 		for (int j = 0; j < sizeY; j++)
 		{
-			bool isAlive = cells[i][j]->getStatus();
+			sf::RectangleShape rs;
+			rs.setPosition(sf::Vector2f(windowSizeX * 1.0 / sizeX * i, windowSizeY * 1.0 / sizeY * j));
+			rs.setSize(sf::Vector2f(windowSizeX * 1.0 / sizeX, windowSizeY * 1.0 / sizeY));
+			rs.setOutlineThickness(0.5);
+			rs.setOutlineColor(sf::Color(125, 125, 125, 40));
+			if (cells[i][j]->getStatus() == true)
+			{
+				rs.setFillColor(Color::Green);
+			}
+			else 
+				rs.setFillColor(Color::Black);
 
-			gotoxy(i, j);
-			if (isAlive != previousStatus[i][j] && isAlive == false)
-				std::cout << char(176);
-			else if (isAlive != previousStatus[i][j] && isAlive == true)
-				std::cout << char(219);
-			
+			appWindow.draw(rs);
 		}
-		std::cout << endl;
+	}
+}
 
+void Grid::eventListeners(RenderWindow& appWindow, Event& event)
+{
+	while (appWindow.pollEvent(event))
+	{
+		if (event.type == Event::Closed)
+			appWindow.close();
 	}
 }
 
@@ -86,103 +118,6 @@ void Grid::clearGrid()
 			previousStatus[i][j] = -1;
 		}
 			
-}
-
-void Grid::navigate()
-{
-	int x = 0;
-	int y = 0;
-
-	bool prevStatus = cells[x][y]->getStatus();
-	bool saved = false;											// checking if started status is saved
-
-	char sign = 0;
-	auto currentTimeNavigation = chrono::high_resolution_clock::now();
-	auto currentTimeLoop = chrono::high_resolution_clock::now();
-
-	unsigned long navigationInterval = 50;
-	unsigned long loopInterval = 300;
-
-
-	while (true)
-	{
-		if (x < 0)
-			x = sizeX - 1;
-		else if (x >= sizeX)
-			x = 0;
-
-		if (y < 0)
-			y = sizeY - 1;
-		else if (y >= sizeY)
-			y = 0;
-
-		if (_kbhit())			// save sign if it is avaiable 
-		{
-			sign = _getch();
-		}
-
-		if (hasTimeElapsed(loopInterval, currentTimeLoop) || (sign == 'a' || sign == 's' || sign == 'd' || sign == 'w' || sign == 'f' || sign == 'g'))
-		{
-			currentTimeLoop = chrono::high_resolution_clock::now();
-
-
-			printGrid();
-
-			if (saved == false)		// save starting status
-			{
-				prevStatus = cells[x][y]->getStatus();
-				saved = true;
-			}
-			cells[x][y]->setStatus(!cells[x][y]->getStatus());		// blinkind
-
-			if (sign == 's' && hasTimeElapsed(navigationInterval, currentTimeNavigation))
-			{
-				cells[x][y]->setStatus(prevStatus);
-				sign = 0;
-				y++;
-				saved = false;
-				auto currentTime = chrono::high_resolution_clock::now();
-			}
-			else if (sign == 'w' && hasTimeElapsed(navigationInterval, currentTimeNavigation))
-			{
-				cells[x][y]->setStatus(prevStatus);
-				sign = 0;
-				y--;
-				saved = false;
-				auto currentTime = chrono::high_resolution_clock::now();
-			}
-			else if (sign == 'd' && hasTimeElapsed(navigationInterval, currentTimeNavigation))
-			{
-				cells[x][y]->setStatus(prevStatus);
-				sign = 0;
-				x++;
-				saved = false;
-				auto currentTime = chrono::high_resolution_clock::now();
-			}
-			else if (sign == 'a' && hasTimeElapsed(navigationInterval, currentTimeNavigation))
-			{
-				cells[x][y]->setStatus(prevStatus);
-				sign = 0;
-				x--;
-				saved = false;
-				auto currentTime = chrono::high_resolution_clock::now();
-			}
-			else if (sign == 'f' && hasTimeElapsed(navigationInterval, currentTimeNavigation))
-			{
-				cells[x][y]->setStatus(!prevStatus);
-				sign = 0;
-				saved = false;
-				auto currentTime = chrono::high_resolution_clock::now();
-			}
-			else if (sign == 'v')
-			{
-				this->cells[x][y]->setStatus(prevStatus);
-				break;
-			}
-			else
-				sign = 0;
-		}
-	}
 }
 
 unsigned int Grid::checkNeighbourhood(vector <vector<bool>> cells, int x, int y, bool verticalCondition, bool horizontalCondition)
@@ -285,77 +220,22 @@ void Grid::calculateNextGeneration(bool verticalCondition, bool horizontalCondit
 			}
 			
 		}
-		std::cout << endl;
 	}
 }
 
-void Grid::gotoxy(unsigned int x, unsigned int y)
+void Grid::oneGenerationBack()
 {
-	COORD c;
-
-	c.X = x;
-	c.Y = y;
-
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
-}
-
-bool Grid::hasTimeElapsed(unsigned long millis, high_resolution_clock::time_point previousTime)
-{
-	auto currentTime = chrono::high_resolution_clock::now();
-	auto timeElapsed = currentTime - previousTime;
-
-	if (chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count() > millis)
+	for (int i = 0; i < sizeX; i++)
 	{
-		return true;
-	}
-	return false;
-}
-
-void Grid::start(unsigned long interval, bool verticalCondition, bool horizontalCondition)
-{
-	auto currentTime = chrono::high_resolution_clock::now();
-	while (true)
-	{
-		char sign = 0;
-		if (_kbhit())			// save sign if it is avaiable 
+		for (int j = 0; j < sizeY; j++)
 		{
-			sign = _getch();
-		}
-		if (sign == 'p')
-		{
-			char s = 0;
-			while (s != 'p')
+			bool tmp = previousStatus[i][j];
+			if (tmp != -1)
 			{
-				s = _getch();
-				if (s == 'f')
-				{
-					cout << "Encoded: " << encodeGrid() << endl;
-					fileManagement::saveStateToFile(encodeGrid(), "abc");
-				}
-				if (s == 'l')
-				{
-					fs::path path{ fs::current_path().u8string() + "\\Saves\\abc" + ".rle" };
-					string decoded = fileManagement::loadStateFromFile(path, sizeX, sizeY);
-					vector<vector<bool>> v = decodeGrid(decoded);
-					clearGrid();
-					loadDecodedGrid(v);
-					printGrid();
-				}
-				if (s == 'c')
-				{
-					clearGrid();
-					printGrid();
-				}
+				previousStatus[i][j] = cells[i][j]->getStatus();
+				cells[i][j]->setStatus(tmp);
 			}
 		}
-			
-		if (hasTimeElapsed(interval, currentTime))
-		{
-			currentTime = chrono::high_resolution_clock::now();
-			calculateNextGeneration(verticalCondition, horizontalCondition);
-			printGrid();
-		}
-		
 	}
 }
 

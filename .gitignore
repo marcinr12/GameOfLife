@@ -7,6 +7,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+.cmd
+
+#Saved patterns
+.rle
+
+
 # User-specific files
 *.rsuser
 *.suo
