@@ -1,0 +1,156 @@
+Renderer.1 {
+    backgroundcolor = #F5F5F5;
+    backgroundcolordisabled = #E6E6E6;
+    backgroundcolordown = #EBEBEB;
+    backgroundcolorhover = white;
+    bordercolor = #3C3C3C;
+    bordercolordisabled = #7D7D7D;
+    bordercolordown = black;
+    bordercolorfocused = #1E1EB4;
+    bordercolorhover = black;
+    borders = (1, 1, 1, 1);
+    textcolor = #3C3C3C;
+    textcolordisabled = #7D7D7D;
+    textcolordown = black;
+    textcolorhover = black;
+    texture = None;
+    texturedisabled = None;
+    texturedown = None;
+    texturefocused = None;
+    texturehover = None;
+}
+
+Button.LOAD_BTN {
+    Position = (620, 10);
+    Size = (160, 22);
+    Text = Load;
+    TextSize = 13;
+    renderer = &1;
+}
+
+Slider.Slider2 {
+    InvertedDirection = false;
+    Maximum = 100;
+    Minimum = 5;
+    Position = (620, 350);
+    Size = (160, 16);
+    Step = 1;
+    Value = 5;
+
+    Renderer {
+        bordercolor = #3C3C3C;
+        bordercolorhover = black;
+        borders = (1, 1, 1, 1);
+        texturethumb = None;
+        texturethumbhover = None;
+        texturetrack = None;
+        texturetrackhover = None;
+        thumbcolor = #F5F5F5;
+        thumbcolorhover = white;
+        trackcolor = #F5F5F5;
+        trackcolorhover = white;
+    }
+}
+
+Button.SAVE_BTN {
+    Position = (620, 50);
+    Size = (160, 22);
+    Text = Save;
+    TextSize = 13;
+    renderer = &1;
+}
+
+Button.CLEAR_BTN {
+    Position = (620, 90);
+    Size = (160, 22);
+    Text = Clear;
+    TextSize = 13;
+    renderer = &1;
+}
+
+Button.PLAY_BTN {
+    Position = (620, 130);
+    Size = (160, 22);
+    Text = Play;
+    TextSize = 13;
+    renderer = &1;
+}
+
+Button.STOP_BTN {
+    Position = (620, 170);
+    Size = (160, 22);
+    Text = Stop;
+    TextSize = 13;
+    renderer = &1;
+}
+
+Button.NEXT_BTN {
+    Position = (620, 250);
+    Size = (160, 22);
+    Text = Next;
+    TextSize = 13;
+    renderer = &1;
+}
+
+Button.BACK_BTN {
+    Position = (620, 210);
+    Size = (160, 22);
+    Text = Back;
+    TextSize = 13;
+    renderer = &1;
+}
+
+ComboBox.FILE_COMBO_BOX {
+    ChangeItemOnScroll = true;
+    ExpandDirection = Down;
+    ItemsToDisplay = 0;
+    MaximumItems = 0;
+    Position = (620, 300);
+    Size = (160, 22);
+    TextSize = 13;
+
+    Renderer {
+        arrowbackgroundcolor = #F5F5F5;
+        arrowbackgroundcolorhover = white;
+        arrowcolor = #3C3C3C;
+        arrowcolorhover = black;
+        backgroundcolor = #F5F5F5;
+        bordercolor = black;
+        borders = (1, 1, 1, 1);
+        padding = (0, 0, 0, 0);
+        textcolor = #3C3C3C;
+        texturearrow = None;
+        texturearrowhover = None;
+        texturebackground = None;
+    }
+}
+
+Label.setFpsLimit {
+    Position = (720, 534.946);
+    ScrollbarPolicy = Never;
+    Size = (57.2, 43.0538);
+    Text = FPS;
+    TextSize = 25;
+
+    Renderer {
+        backgroundcolor = transparent;
+        bordercolor = #3C3C3C;
+        borders = (0, 0, 0, 0);
+        textcolor = #3C3C3C;
+    }
+}
+
+Label.displayedFps {
+    Position = (620, 534.946);
+    ScrollbarPolicy = Never;
+    Size = (57.2, 43.0538);
+    Text = FPS;
+    TextSize = 25;
+
+    Renderer {
+        backgroundcolor = transparent;
+        bordercolor = #3C3C3C;
+        borders = (0, 0, 0, 0);
+        textcolor = #3C3C3C;
+    }
+}

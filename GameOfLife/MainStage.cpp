@@ -1,14 +1,16 @@
 #include "MainStage.h"
 
-unsigned int MainStage::btnCounter = 0;
-
-MainStage::MainStage(StageParams sp)
+MainStage::MainStage(unsigned int x, unsigned int y)
 {
-	this->appWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(sp.getWindowWidth(), sp.getWindowHight() + sp.getBtnArea(), 32), "My app");
-	appWindow->setFramerateLimit(60);
-	appWindow->setVerticalSyncEnabled(true);
-	appWindow->clear(sf::Color::Black);
+	this->windowWidth = x;
+	this->windowHight = y;
+	this->appWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(x, y, 32), "Game of Life");
+	this->gui = std::make_shared<tgui::Gui>(*this->appWindow);
 
+
+	this->appWindow->setSize(sf::Vector2u(x, y));
+	this->appWindow->clear(sf::Color::Black);
+	loadWidgets();
 }
 
 std::shared_ptr<sf::RenderWindow> MainStage::getAppWindow()
@@ -16,15 +18,29 @@ std::shared_ptr<sf::RenderWindow> MainStage::getAppWindow()
 	return appWindow;
 }
 
-std::map<std::string, std::shared_ptr<Button>> MainStage::getButtons()
+
+tgui::Label::Ptr MainStage::getLabel(string key)
 {
-	return buttons;
+	return labels[key];
 }
 
-unsigned int MainStage::getBtnCounter()
+std::shared_ptr<tgui::Gui> MainStage::getGui()
 {
-	return btnCounter;
+	return gui;
 }
+
+unsigned MainStage::getFpsLimit()
+{
+	return this->fpsLimit;
+}
+
+unsigned int MainStage::getPrintIntervalMillis()
+{
+	return this->printIntervalMillis;
+}
+
+
+
 
 bool MainStage::isGridLoaded()
 {
@@ -41,67 +57,81 @@ bool MainStage::isGamePaused()
 	return this->gamePaused;
 }
 
-void MainStage::createButton(StageParams sp, sf::Font &font, std::string key, std::string text, unsigned int btnWidth, unsigned int btnHight)
-{
-	this->buttons[key] = std::make_shared<Button>(btnCounter * btnWidth + (btnCounter + 1) * 10, sp.getWindowHight() + (sp.getBtnArea() - btnHight) / 2, btnWidth, btnHight, &font, text);
-	btnCounter++;
-}
 
-//void MainStage::initButtons(StageParams sp, sf::Font font, std::string key, std::string text, unsigned int btnWidth, unsigned int btnHight)
-//{
-//	this->buttons[key] = std::make_shared<Button>(10, sp.getWindowHight() + (sp.getBtnArea() - btnHight) / 2, btnWidth, btnHight, &font, text);
-//	Button playBtn(10, sp.getWindowHight() + (sp.getBtnArea() - btnHight) / 2, btnWidth, btnHight, &font, text);
-//}
 
-void MainStage::eventListeners(sf::Event & event, fs::path path, Grid grid, InitialCondition ic, StageParams sp)
+void MainStage::eventListeners(sf::Event & event, Grid grid, GridInitialCondition ic)
 {
-	if (buttons["LOAD_BTN"]->isPressed())
+	int dt = 50;
+	if (buttons["LOAD_BTN"]->mouseOnWidget(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
 	{
-		std::string decoded = fileManagement::loadStateFromFile(path, grid.getSizeX(), grid.getSizeY());
+
+		int index = fileComboBox->getFileComboBoxPtr()->getSelectedItemIndex();
+		if (index < 0)
+			return;
+		grid.clearGrid();
+		fs::path filePath = fileComboBox->getPath(index);
+		std::string decoded = fileManagement::loadStateFromFile(filePath, grid.getSizeX(), grid.getSizeY());
 		std::vector<std::vector<bool>> v = grid.decodeGrid(decoded);
 		grid.loadDecodedGrid(v);
+
+
 		this->gridLoaded = true;
 		this->currentIteration = true;
+		sleep(sf::milliseconds(dt));
 	}
-	if (buttons["SAVE_BTN"]->isPressed())
+
+	if (buttons["SAVE_BTN"]->mouseOnWidget(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
 	{
-		fileManagement::saveStateToFile(grid.encodeGrid(), "abc");
+		fileManagement::saveStateToFile(grid.encodeGrid(), "MySave");
+		sleep(sf::milliseconds(dt));
 	}
-	if (buttons["CLEAR_BTN"]->isPressed())
+	if (buttons["CLEAR_BTN"]->mouseOnWidget(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
 	{
 		grid.clearGrid();
 		this->gridLoaded = false;
 		this->currentIteration = true;
-		buttons["STOP_BTN"]->setIdleColor(sf::Color(70, 70, 70, 200));
-		buttons["PLAY_BTN"]->setIdleColor(sf::Color(70, 70, 70, 200));
+		//buttons["STOP_BTN"]->setIdleColor(sf::Color(70, 70, 70, 200));
+		//buttons["PLAY_BTN"]->setIdleColor(sf::Color(70, 70, 70, 200));
+		sleep(sf::milliseconds(dt));
 
 	}
-	if (buttons["PLAY_BTN"]->isPressed())
+	if (buttons["PLAY_BTN"]->mouseOnWidget(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
 	{
-		buttons["PLAY_BTN"]->setIdleColor(sf::Color::Red);
-		buttons["STOP_BTN"]->setIdleColor(sf::Color(70, 70, 70, 200));
+		//buttons["PLAY_BTN"]->setIdleColor(sf::Color::Red);
+		//buttons["STOP_BTN"]->setIdleColor(sf::Color(70, 70, 70, 200));
 		this->gamePaused = false;
 		this->currentIteration = true;
+		sleep(sf::milliseconds(dt));
+
 	}
-	if (buttons["STOP_BTN"]->isPressed())
+	if (buttons["STOP_BTN"]->mouseOnWidget(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
 	{
-		buttons["STOP_BTN"]->setIdleColor(sf::Color::Red);
-		buttons["PLAY_BTN"]->setIdleColor(sf::Color(70, 70, 70, 200));
+		//buttons["STOP_BTN"]->setIdleColor(sf::Color::Red);
+		//buttons["PLAY_BTN"]->setIdleColor(sf::Color(70, 70, 70, 200));
 		this->gamePaused = true;
+		sleep(sf::milliseconds(dt));
 	}
-	if (buttons["BACK_BTN"]->isPressed() && this->currentIteration)
+	if (buttons["BACK_BTN"]->mouseOnWidget(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)) && this->currentIteration)
 	{
 		grid.oneGenerationBack();
 		this->currentIteration = false;
 	}
-	if (buttons["NEXT_BTN"]->isPressed())
+	if (buttons["NEXT_BTN"]->mouseOnWidget(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
 	{
 		grid.calculateNextGeneration(ic.getVerticalCongition(), ic.getHorizontalCondition());
 		this->currentIteration = true;
+		sleep(sf::milliseconds(dt));
 	}
+	if (fpsLimit != slider->getValue())
+	{
+		fpsLimit = slider->getValue();
+		appWindow->setFramerateLimit(fpsLimit);
+		printIntervalMillis = (1.0 / fpsLimit) * 1000;
+		labels["setFpsLimit"]->setText(to_string(fpsLimit));
+	}
+
 	sf::Mouse mouse;
 	sf::Vector2f position = sf::Vector2f(mouse.getPosition(*this->getAppWindow()));
-	cout << position.x << '\t' << position.y << endl;
 	for (int i = 0; i < grid.getSizeX(); i++)
 	{
 		for (int j = 0; j < grid.getSizeY(); j++)
@@ -111,9 +141,8 @@ void MainStage::eventListeners(sf::Event & event, fs::path path, Grid grid, Init
 			fr.left = grid.getCell(i, j)->getPositionX();
 			fr.top = grid.getCell(i, j)->getPositionY();
 			sf::Vector2u windowSize = this->getAppWindow()->getSize();
-			fr.width = sp.getWindowWidth() * 1.0 / grid.getSizeX();
-			fr.height = sp.getWindowHight() * 1.0 / grid.getSizeY();
-			//cout << windowSize.y << endl;
+			fr.width = windowWidth * 1.0 / grid.getSizeX();
+			fr.height = windowHight * 1.0 / grid.getSizeY();
 
 			if (fr.contains(position))
 			{
@@ -133,21 +162,38 @@ void MainStage::eventListeners(sf::Event & event, fs::path path, Grid grid, Init
 	}
 	if (event.type == Event::Closed)
 		appWindow->close();
-
 }
 
-void MainStage::renderButtons(sf::RenderWindow* target)
+void MainStage::loadWidgets()
 {
-	for (auto &it : this->buttons)
+	
+	this->gui->loadWidgetsFromFile("./form.txt");
+	
+	std::vector<tgui::Widget::Ptr> w = gui->getWidgets();
+
+	for (int i = 0; i < w.size(); i++)
 	{
-		it.second->render(target);
-	}
+		string name = gui->getWidgetName(w[i]);
+		string type = w[i]->getWidgetType();
+		
+		if (type == "Button")
+			buttons[name] = w[i]->cast<tgui::Button>();
+		else if (type == "Label")
+		{
+			labels[name] = w[i]->cast<tgui::Label>();
+		}
+		else if (type == "ComboBox")
+		{
+			this->fileComboBox = std::make_shared<FileComboBox>(w[i]->cast<tgui::ComboBox>());
+			this->fileComboBox->addFiles();
+		}
+		else if (type == "Slider")
+		{
+			slider = w[i]->cast<tgui::Slider>();
+		}
+		else
+			cout << "Unsaved widget!!!\t" << type << '\t' << name << endl;
+	}		
 }
 
-void MainStage::updateButtons(sf::Vector2f position)
-{
-	for (auto &it : this->buttons)
-	{
-		it.second->update(position);
-	}
-}
+

@@ -1,15 +1,17 @@
 #pragma once
-#include "StageParams.h"
-#include "Button.h"
 #include <map>
 #include <memory>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include <TGUI/TGUI.hpp>
+
 #include "fileManagement.h"
 #include "Grid.h"
-#include "InitialCondition.h"
+#include "GridInitialCondition.h"
+
+#include "FileComboBox.h"
 
 
 class MainStage
@@ -17,30 +19,37 @@ class MainStage
 	bool gridLoaded = false;
 	bool currentIteration = false;
 	bool gamePaused = true;
+	unsigned int windowWidth;
+	unsigned int windowHight;
+
+	unsigned int fpsLimit = 0;
+	unsigned int printIntervalMillis = 0;
 
 
-	static unsigned int btnCounter;
 	std::shared_ptr<sf::RenderWindow> appWindow;
-	std::map<std::string, std::shared_ptr<Button>> buttons;
+	std::shared_ptr<tgui::Gui> gui;
+	std::map<std::string, tgui::Button::Ptr> buttons;
+	std::map<std::string, tgui::Label::Ptr> labels;
+	std::shared_ptr<FileComboBox> fileComboBox = NULL;
+	std::shared_ptr<tgui::Slider> slider;
 
 
 public:
 	MainStage() = delete;
-	MainStage(StageParams sp);
+	MainStage(unsigned int x, unsigned int y);
 
 	std::shared_ptr<sf::RenderWindow> getAppWindow();
-	std::map<std::string, std::shared_ptr<Button>> getButtons();
-	unsigned int getBtnCounter();
+	std::map<std::string, tgui::Widget::Ptr> getWidgets();
+	tgui::Label::Ptr getLabel(string key);
+	std::shared_ptr<tgui::Gui> getGui();
+
+	unsigned getFpsLimit();
+	unsigned int getPrintIntervalMillis();
+
 	bool isGridLoaded();
 	bool isCurrentIteration();
 	bool isGamePaused();
 
-	void createButton(StageParams sp, sf::Font &font, std::string key, std::string text = "BUTTON", unsigned int btnWidth = 40, unsigned int btnHight = 30);
-	void initButtons(StageParams sp, sf::Font font, std::string key, std::string text = "BUTTON", unsigned int btnWidth = 40, unsigned int btnHight = 30);
-
-
-	//void renderButtons(sf::RenderTarget* target = NULL);
-	void eventListeners(sf::Event& event, fs::path path, Grid grid, InitialCondition ic, StageParams sp);
-	void renderButtons(sf::RenderWindow* target);
-	void updateButtons(sf::Vector2f position);
+	void eventListeners(sf::Event& event, Grid grid, GridInitialCondition ic);
+	void loadWidgets();
 };

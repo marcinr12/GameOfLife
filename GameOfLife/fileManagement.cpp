@@ -6,7 +6,7 @@ using namespace std;
 void fileManagement::saveStateToFile(std::string encoded, std::string fileName)
 {
 	//opening and saving to file
-	std::filesystem::path path{ fs::current_path().u8string() + "\\Saves" };	//creates folder Saves
+	std::filesystem::path path{ fs::current_path().u8string() + "\\Patterns" };	//creates folder Saves
 	path /= fileName + ".rle"; //name of file
 	std::filesystem::create_directories(path.parent_path());
 	std::ofstream ofs(path);

@@ -24,23 +24,16 @@ Grid::Grid(unsigned int sizeX, unsigned int sizeY)
 			previousStatus[i][j] = -1;
 		}
 	}
-
-	// consol coursor turning off
-	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	CONSOLE_CURSOR_INFO     cursorInfo;
-
-	GetConsoleCursorInfo(out, &cursorInfo);
-	cursorInfo.bVisible = false;
-	SetConsoleCursorInfo(out, &cursorInfo);
 }
 
-Grid::Grid(unsigned int sizeX, unsigned int sizeY, unsigned int windowHeight, unsigned int windowWidth)
+Grid::Grid(unsigned int sizeX, unsigned int sizeY, unsigned int gridWindowWidth, unsigned int gridWindowHeight)
 {
 	this->sizeX = sizeX;
 	this->sizeY = sizeY;
-	double dX = (windowWidth * 1.0) / sizeX;
-	double dY = (windowHeight * 1.0) / sizeY;
+	double dX = (gridWindowWidth * 1.0) / sizeX;
+	double dY = (gridWindowHeight * 1.0) / sizeY;
+	this->gridWindowHeight = gridWindowHeight;
+	this->gridWindowWidth = gridWindowWidth;
 
 	cells.resize(sizeX);
 	previousStatus.resize(sizeX);
@@ -77,15 +70,15 @@ unsigned int Grid::getSizeY()
 	return sizeY;
 }
 
-void Grid::printGridSFML(RenderWindow &appWindow, unsigned int windowSizeX, unsigned int windowSizeY)
+void Grid::printGridSFML(RenderWindow &appWindow)
 {
 	for (int i = 0; i < sizeX; i++)
 	{
 		for (int j = 0; j < sizeY; j++)
 		{
 			sf::RectangleShape rs;
-			rs.setPosition(sf::Vector2f(windowSizeX * 1.0 / sizeX * i, windowSizeY * 1.0 / sizeY * j));
-			rs.setSize(sf::Vector2f(windowSizeX * 1.0 / sizeX, windowSizeY * 1.0 / sizeY));
+			rs.setPosition(sf::Vector2f(gridWindowWidth * 1.0 / sizeX * i, gridWindowHeight * 1.0 / sizeY * j));
+			rs.setSize(sf::Vector2f(gridWindowWidth * 1.0 / sizeX, gridWindowHeight * 1.0 / sizeY));
 			rs.setOutlineThickness(0.5);
 			rs.setOutlineColor(sf::Color(125, 125, 125, 40));
 			if (cells[i][j]->getStatus() == true)
@@ -97,15 +90,6 @@ void Grid::printGridSFML(RenderWindow &appWindow, unsigned int windowSizeX, unsi
 
 			appWindow.draw(rs);
 		}
-	}
-}
-
-void Grid::eventListeners(RenderWindow& appWindow, Event& event)
-{
-	while (appWindow.pollEvent(event))
-	{
-		if (event.type == Event::Closed)
-			appWindow.close();
 	}
 }
 

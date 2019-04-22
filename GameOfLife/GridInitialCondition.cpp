@@ -1,6 +1,6 @@
-#include "InitialCondition.h"
+#include "GridInitialCondition.h"
 
-InitialCondition::InitialCondition()
+GridInitialCondition::GridInitialCondition()
 {
 	boost::property_tree::ptree tree;
 	boost::property_tree::read_json("InitialCondition.json", tree);
@@ -10,30 +10,30 @@ InitialCondition::InitialCondition()
 	this->horizontalConditon = tree.get<bool>("horizontalCondition");
 }
 
-InitialCondition::InitialCondition(unsigned int x, unsigned int y, bool verticalCondition, bool horizontalCondition)
+GridInitialCondition::GridInitialCondition(unsigned int sizeX, unsigned int sizeY, bool verticalCondition, bool horizontalCondition)
 {
-	this->sizeX = x;
-	this->sizeY = y;
+	this->sizeX = sizeX;
+	this->sizeY = sizeY;
 	this->verticalCondition = verticalCondition;
 	this->horizontalConditon = horizontalCondition;
 }
 
-unsigned int InitialCondition::getSizeX()
+unsigned int GridInitialCondition::getSizeX()
 {
 	return sizeX;
 }
 
-unsigned int InitialCondition::getSizeY()
+unsigned int GridInitialCondition::getSizeY()
 {
 	return sizeY;
 }
 
-bool InitialCondition::getVerticalCongition()
+bool GridInitialCondition::getVerticalCongition()
 {
 	return this->verticalCondition;
 }
 
-bool InitialCondition::getHorizontalCondition()
+bool GridInitialCondition::getHorizontalCondition()
 {
 	return this->horizontalConditon;
 }

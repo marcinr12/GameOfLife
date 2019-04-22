@@ -4,7 +4,7 @@
 #include <boost/foreach.hpp>
 #include <string>
 
-class InitialCondition
+class GridInitialCondition
 {
 	unsigned int sizeX;
 	unsigned int sizeY;
@@ -12,8 +12,8 @@ class InitialCondition
 	bool horizontalConditon;
 
 public:
-	InitialCondition();
-	InitialCondition(unsigned int, unsigned int, bool, bool);
+	GridInitialCondition();
+	GridInitialCondition(unsigned int sizeX, unsigned int sizeY, bool verticalCondition, bool horizontalCondition);
 	unsigned int getSizeX();
 	unsigned int getSizeY();
 	bool getVerticalCongition();
