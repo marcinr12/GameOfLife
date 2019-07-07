@@ -7,12 +7,12 @@ Grid::Grid(unsigned int sizeX, unsigned int sizeY)
 	this->sizeX = sizeX;
 	this->sizeY = sizeY;
 
-	cells.resize(sizeX);
-	previousStatus.resize(sizeX);
+	this->cells.resize(sizeX);
+	this->previousStatus.resize(sizeX);
 	for (int i = 0; i < sizeX; i++)
 	{
-		cells[i].resize(sizeY);
-		previousStatus[i].resize(sizeY);
+		this->cells[i].resize(sizeY);
+		this->previousStatus[i].resize(sizeY);
 	}
 		
 
@@ -20,8 +20,8 @@ Grid::Grid(unsigned int sizeX, unsigned int sizeY)
 	{
 		for (int j = 0; j < sizeY; j++)
 		{
-			cells[i][j] = make_shared<Cell>(i, j, false);
-			previousStatus[i][j] = -1;
+			this->cells[i][j] = make_shared<Cell>(i, j, false);
+			this->previousStatus[i][j] = -1;
 		}
 	}
 }
@@ -34,40 +34,41 @@ Grid::Grid(unsigned int sizeX, unsigned int sizeY, unsigned int gridWindowWidth,
 	double dY = (gridWindowHeight * 1.0) / sizeY;
 	this->gridWindowHeight = gridWindowHeight;
 	this->gridWindowWidth = gridWindowWidth;
+	this->vertexArray = VertexArray(Quads);
+	this->vertexArray.resize(4 * sizeX * sizeY);
 
-	cells.resize(sizeX);
-	previousStatus.resize(sizeX);
+	this->cells.resize(sizeX);
+	this->previousStatus.resize(sizeX);
 	for (int i = 0; i < sizeX; i++)
 	{
-		cells[i].resize(sizeY);
-		previousStatus[i].resize(sizeY);
+		this->cells[i].resize(sizeY);
+		this->previousStatus[i].resize(sizeY);
 	}
 
 	for (int i = 0; i < sizeX; i++)
 	{
 		for (int j = 0; j < sizeY; j++)
 		{
-			cells[i][j] = make_shared<Cell>(i * dX, j * dY, false);
-			previousStatus[i][j] = -1;
+			this->cells[i][j] = make_shared<Cell>(i * dX, j * dY, false);
+			this->previousStatus[i][j] = -1;
 		}
 	}
 }
 
 shared_ptr<Cell> Grid::getCell(int x, int y)
 {
-	
 
 	return this->cells[x][y];
 }
 
 unsigned int Grid::getSizeX()
 {
-	return sizeX;
+	return this->sizeX;
 }
 
 unsigned int Grid::getSizeY()
 {
-	return sizeY;
+	return this->sizeY;
 }
 
 void Grid::printGridSFML(RenderWindow &appWindow)
@@ -76,21 +77,33 @@ void Grid::printGridSFML(RenderWindow &appWindow)
 	{
 		for (int j = 0; j < sizeY; j++)
 		{
-			sf::RectangleShape rs;
-			rs.setPosition(sf::Vector2f(gridWindowWidth * 1.0 / sizeX * i, gridWindowHeight * 1.0 / sizeY * j));
-			rs.setSize(sf::Vector2f(gridWindowWidth * 1.0 / sizeX, gridWindowHeight * 1.0 / sizeY));
-			rs.setOutlineThickness(0.5);
-			rs.setOutlineColor(sf::Color(125, 125, 125, 40));
+			this->vertexArray[(i * sizeY + j) * 4].position = sf::Vector2f(gridWindowWidth * 1.0 / sizeX * i, gridWindowHeight * 1.0 / sizeY * j);
+			this->vertexArray[(i * sizeY + j) * 4 + 1].position = sf::Vector2f(gridWindowWidth * 1.0 / sizeX * (i + 1), gridWindowHeight * 1.0 / sizeY * j);
+			this->vertexArray[(i * sizeY + j) * 4 + 2].position = sf::Vector2f(gridWindowWidth * 1.0 / sizeX * (i + 1), gridWindowHeight * 1.0 / sizeY * (j + 1));
+			this->vertexArray[(i * sizeY + j) * 4 + 3].position = sf::Vector2f(gridWindowWidth * 1.0 / sizeX * i, gridWindowHeight * 1.0 / sizeY * (j + 1));
+
+
 			if (cells[i][j]->getStatus() == true)
 			{
-				rs.setFillColor(Color::Green);
+				//vertexArray[(i * sizeY + j) * 4].color = Color::Green;
+				//vertexArray[(i * sizeY + j) * 4 + 1].color = Color::Green;
+				//vertexArray[(i * sizeY + j) * 4 + 2].color = Color::Green;
+				//vertexArray[(i * sizeY + j) * 4 + 3].color = Color::Green;
+				this->vertexArray[(i * sizeY + j) * 4].color = Color::Black;
+				this->vertexArray[(i * sizeY + j) * 4 + 1].color = Color::Green;
+				this->vertexArray[(i * sizeY + j) * 4 + 2].color = Color::Green;
+				this->vertexArray[(i * sizeY + j) * 4 + 3].color = Color::Green;
 			}
-			else 
-				rs.setFillColor(Color::Black);
-
-			appWindow.draw(rs);
+			else
+			{
+				this->vertexArray[(i * sizeY + j) * 4].color = Color::Red;
+				this->vertexArray[(i * sizeY + j) * 4 + 1].color = Color::Black;
+				this->vertexArray[(i * sizeY + j) * 4 + 2].color = Color::Black;
+				this->vertexArray[(i * sizeY + j) * 4 + 3].color = Color::Black;
+			}	
 		}
 	}
+	appWindow.draw(vertexArray);
 }
 
 void Grid::clearGrid()
@@ -98,13 +111,13 @@ void Grid::clearGrid()
 	for (int i = 0; i < sizeX; i++)
 		for (int j = 0; j < sizeY; j++)
 		{
-			cells[i][j]->setStatus(false);
-			previousStatus[i][j] = -1;
+			this->cells[i][j]->setStatus(false);
+			this->previousStatus[i][j] = -1;
 		}
 			
 }
 
-unsigned int Grid::checkNeighbourhood(vector <vector<bool>> cells, int x, int y, bool verticalCondition, bool horizontalCondition)
+unsigned int Grid::checkNeighbourhood(vector <vector<bool>> & cells, int x, int y, bool verticalCondition, bool horizontalCondition)
 {
 	unsigned int neighbours = 0;
 	short int X[3] = { x - 1, x, x + 1 };
@@ -114,8 +127,8 @@ unsigned int Grid::checkNeighbourhood(vector <vector<bool>> cells, int x, int y,
 	if (verticalCondition)
 	{
 		if (x - 1 < 0)
-			X[0] = sizeX - 1;
-		if (X[2] == sizeX)
+			X[0] = this->sizeX - 1;
+		if (X[2] == this->sizeX)
 			X[2] = 0;
 	}
 
@@ -123,8 +136,8 @@ unsigned int Grid::checkNeighbourhood(vector <vector<bool>> cells, int x, int y,
 	if (horizontalCondition)
 	{
 		if (y - 1 < 0)
-			Y[0] = sizeY - 1;
-		if (Y[2] == sizeY)
+			Y[0] = this->sizeY - 1;
+		if (Y[2] == this->sizeY)
 			Y[2] = 0;
 	}
 
@@ -133,21 +146,129 @@ unsigned int Grid::checkNeighbourhood(vector <vector<bool>> cells, int x, int y,
 		neighbours++;
 	if (X[0] >= 0 && cells[X[0]][Y[1]] == true)
 		neighbours++;
-	if (X[0] >= 0 && Y[2] < sizeY && cells[X[0]][Y[2]] == true)
+	if (X[0] >= 0 && Y[2] < this->sizeY && cells[X[0]][Y[2]] == true)
 		neighbours++;
 
 	if (Y[0] >= 0 && cells[X[1]][Y[0]] == true)
 		neighbours++;
-	if (Y[2] < sizeY && cells[X[1]][Y[2]] == true)
+	if (Y[2] < this->sizeY && cells[X[1]][Y[2]] == true)
 		neighbours++;
 
-	if (X[2] < sizeX && Y[0] >= 0 && cells[X[2]][Y[0]] == true)
+	if (X[2] < this->sizeX && Y[0] >= 0 && cells[X[2]][Y[0]] == true)
 		neighbours++;
-	if (X[2] < sizeX && cells[X[2]][Y[1]] == true)
+	if (X[2] < this->sizeX && cells[X[2]][Y[1]] == true)
 		neighbours++;
-	if (X[2] < sizeX && Y[2] < sizeY && cells[X[2]][Y[2]] == true)
+	if (X[2] < this->sizeX && Y[2] < this->sizeY && cells[X[2]][Y[2]] == true)
 		neighbours++;
 
+	return neighbours;
+}
+
+vector<vector<unsigned>> Grid::checkNeighbourhoodMatrix(bool verticalCondition, bool horizontalCondition)
+{
+	vector<vector<unsigned>> neighbours;
+	neighbours.resize(sizeX);
+	for (int i = 0; i < sizeX; i++)
+	{
+		neighbours[i].resize(sizeY, 0);
+	}
+
+	for (int i = 0; i < this->sizeX; i++)
+	{
+		for (int j = 0; j < this->sizeY; j++)
+		{
+			if (this->cells[i][j]->getStatus())
+			{
+				if (horizontalCondition && verticalCondition)
+				{
+					neighbours[(i - 1 + sizeX) % sizeX][(j - 1 + sizeY) % sizeY]++;
+					neighbours[i][(j - 1 + sizeY) % sizeY]++;
+					neighbours[(i + 1 + sizeX) % sizeX][(j - 1 + sizeY) % sizeY]++;
+
+					neighbours[(i - 1 + sizeX) % sizeX][j]++;
+					neighbours[(i + 1 + sizeX) % sizeX][j]++;
+
+					neighbours[(i - 1 + sizeX) % sizeX][(j + 1 + sizeY) % sizeY]++;
+					neighbours[i][(j + 1 + sizeY) % sizeY]++;
+					neighbours[(i + 1 + sizeX) % sizeX][(j + 1 + sizeY) % sizeY]++;
+
+				}
+				else if (verticalCondition)
+				{
+					neighbours[(i - 1 + sizeX) % sizeX][j]++;
+					neighbours[(i + 1 + sizeX) % sizeX][j]++;
+
+					if (j - 1 >= 0)
+					{
+						neighbours[(i - 1 + sizeX) % sizeX][j-1]++;
+						neighbours[i][j-1]++;
+						neighbours[(i + 1 + sizeX) % sizeX][j-1]++;
+					}
+					if (j + 1 < sizeY)
+					{
+						neighbours[(i - 1 + sizeX) % sizeX][j + 1]++;
+						neighbours[i][j + 1]++;
+						neighbours[(i + 1 + sizeX) % sizeX][j + 1]++;
+					}
+
+				}
+				else if (horizontalCondition)
+				{
+					neighbours[i][(j - 1 + sizeY) % sizeY]++;
+					neighbours[i][(j + 1 + sizeY) % sizeY]++;
+
+					if (i - 1 >= 0)
+					{
+						neighbours[i - 1][(j - 1 + sizeY) % sizeY]++;
+						neighbours[i - 1][j]++;
+						neighbours[i - 1][(j + 1 + sizeY) % sizeY]++;
+					}
+					if (i + 1 < sizeX)
+					{
+						neighbours[i + 1][(j - 1 + sizeY) % sizeY]++;
+						neighbours[i + 1][j]++;
+						neighbours[i + 1][(j + 1 + sizeY) % sizeY]++;
+					}
+				}
+				else
+				{
+					if (i - 1 >= 0)
+					{
+						if (j - 1 >= 0)
+						{
+							neighbours[i - 1][j - 1]++;
+						}
+						if (j + 1 < sizeY)
+						{
+							neighbours[i - 1][j + 1]++;
+						}
+						neighbours[i - 1][j]++;
+					}
+					if (i + 1 < sizeX)
+					{
+						if (j - 1 >= 0)
+						{
+							neighbours[i + 1][j - 1]++;
+						}
+						if (j + 1 < sizeY)
+						{
+							neighbours[i + 1][j + 1]++;
+						}
+						neighbours[i + 1][j]++;
+					}
+
+					if (j - 1 >= 0)
+					{
+						neighbours[i][j - 1]++;
+					}
+					if (j + 1 < sizeY)
+					{
+						neighbours[i][j + 1]++;
+					}
+				}
+			}
+		}
+	}
 	return neighbours;
 }
 
@@ -155,54 +276,78 @@ void Grid::calculateNextGeneration(bool verticalCondition, bool horizontalCondit
 {
 
 	vector<vector<bool>> previous;
-	previous.resize(cells.size());
-	for (int i = 0; i < cells.size(); i++)
+	previous.resize(this->cells.size());
+	for (int i = 0; i < this->cells.size(); i++)
 	{
-		previous[i].resize(cells[i].size());
+		previous[i].resize(this->cells[i].size());
 	}
 
-	for (int i = 0; i < cells.size(); i++)
-		for (int j = 0; j < cells[0].size(); j++)
-			previous[i][j] = cells[i][j]->getStatus();
+	for (int i = 0; i < this->cells.size(); i++)
+		for (int j = 0; j < this->cells[0].size(); j++)
+			previous[i][j] = this->cells[i][j]->getStatus();
 
 	for (int i = 0; i < previous.size(); i++)
 	{
 		for (int j = 0; j < previous[0].size(); j++)
 		{
 			bool isAlive = previous[i][j];
-			previousStatus[i][j] = isAlive;							//saving status previous iteration to matrix 
+			this->previousStatus[i][j] = isAlive;							//saving status previous iteration to matrix 
 			int neighbours = checkNeighbourhood(previous, i, j, verticalCondition, horizontalCondition);
 
-			//if (neighbours < 2)
-			//	cells[i][j].setStatus(false);
-			//else if (isAlive == true && (neighbours == 3 || neighbours == 2))
-			//	cells[i][j].setStatus(true);
-			//else if (neighbours > 3)
-			//	cells[i][j].setStatus(false);
-			//else if (isAlive == false && neighbours == 3)
-			//	cells[i][j].setStatus(true);
-
-
 			if (neighbours == 3)
-				this->getCell(i, j)->setStatus(1);
+				this->cells[i][j]->setStatus(1);
 			else if (isAlive == true && neighbours == 2)
-				this->getCell(i, j)->setStatus(1);
+				this->cells[i][j]->setStatus(1);
 			else
-				this->getCell(i, j)->setStatus(0);
+				this->cells[i][j]->setStatus(0);
 
 			if (neighbours == 3)
 			{
-				cells[i][j]->setStatus(true);
+				this->cells[i][j]->setStatus(true);
 			}
 			else if (isAlive == true && neighbours == 2)
 			{
-				cells[i][j]->setStatus(true);
+				this->cells[i][j]->setStatus(true);
 			}
 			else
 			{
-				cells[i][j]->setStatus(false);
+				this->cells[i][j]->setStatus(false);
 			}
 			
+		}
+	}
+}
+
+void Grid::calculateNextGenerationMatrix(bool verticalCondition, bool horizontalConditiontion)
+{
+	vector<vector<unsigned>> neighbours;
+	
+
+	neighbours = this->checkNeighbourhoodMatrix(verticalCondition, horizontalConditiontion);
+
+	for (int i = 0; i < sizeX; i++)
+	{
+		for (int j = 0; j < sizeY; j++)
+		{
+			if (neighbours[i][j] == 3)
+				this->cells[i][j]->setStatus(1);
+			else if (cells[i][j]->getStatus() == true && neighbours[i][j] == 2)
+				this->cells[i][j]->setStatus(1);
+			else
+				this->cells[i][j]->setStatus(0);
+
+			if (neighbours[i][j] == 3)
+			{
+				this->cells[i][j]->setStatus(true);
+			}
+			else if (cells[i][j]->getStatus() == true && neighbours[i][j] == 2)
+			{
+				this->cells[i][j]->setStatus(true);
+			}
+			else
+			{
+				this->cells[i][j]->setStatus(false);
+			}
 		}
 	}
 }
@@ -213,10 +358,10 @@ void Grid::oneGenerationBack()
 	{
 		for (int j = 0; j < sizeY; j++)
 		{
-			bool tmp = previousStatus[i][j];
+			bool tmp = this->previousStatus[i][j];
 			if (tmp != -1)
 			{
-				previousStatus[i][j] = cells[i][j]->getStatus();
+				this->previousStatus[i][j] = cells[i][j]->getStatus();
 				cells[i][j]->setStatus(tmp);
 			}
 		}
@@ -315,5 +460,5 @@ void Grid::loadDecodedGrid(vector<vector<bool>> v)
 {
 	for (int i = 0; i < v.size(); i++)
 		for (int j = 0; j < v[i].size(); j++)
-			cells[j][i]->setStatus(v[i][j]);
+			this->cells[j][i]->setStatus(v[i][j]);
 }

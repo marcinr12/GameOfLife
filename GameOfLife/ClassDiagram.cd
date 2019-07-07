@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Cell" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAIAAAAAAAgACAAABAIAACAAAABEIAAAAAAAAAAAA=</HashCode>
+      <FileName>Cell.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FileComboBox" Collapsed="true">
+    <Position X="6.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEQAAIAAIACACAAIAAAAAgAAgAAAEABAAACA=</HashCode>
+      <FileName>FileComboBox.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Grid" Collapsed="true">
+    <Position X="8.75" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAkhAAAgABAAgBAAEAEACAAAAIIICEACgCBAAAAA=</HashCode>
+      <FileName>Grid.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GridInitialCondition" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAgAAAABAAAIAAEACAABEBAAA=</HashCode>
+      <FileName>GridInitialCondition.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MainStage" Collapsed="true">
+    <Position X="0.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>BAAAQABAQEIAABAAICCAQAwAEIAAUBAgAAAEAAAQwIA=</HashCode>
+      <FileName>MainStage.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

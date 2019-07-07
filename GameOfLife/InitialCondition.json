@@ -1,6 +1,6 @@
 {
-    "sizeX": "50",
-    "sizeY": "50",
-    "verticalCondition": "true",
-    "horizontalCondition": "true"
+    "sizeX": "100",
+    "sizeY": "100",
+    "verticalCondition": "false",
+    "horizontalCondition": "false"
 }

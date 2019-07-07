@@ -16,7 +16,8 @@ using namespace sf;
 int main()
 {
 	//InitialCondition ic;
-	GridInitialCondition ic(50, 50, true, false);
+	//GridInitialCondition ic;
+	GridInitialCondition ic(100, 100, false, false);
 
 	MainStage ms(800, 600);
 	Grid grid(ic.getSizeX(), ic.getSizeY(), 600, 600);
@@ -54,7 +55,8 @@ int main()
 
 		if (isNextGenerationCalculated == false && !ms.isGamePaused() && ms.isGridLoaded())
 		{
-			grid.calculateNextGeneration(ic.getVerticalCongition(), ic.getHorizontalCondition());
+			//grid.calculateNextGeneration(ic.getVerticalCongition(), ic.getHorizontalCondition());
+			grid.calculateNextGenerationMatrix(ic.getVerticalCongition(), ic.getHorizontalCondition());
 			isNextGenerationCalculated = true;
 		}
 

@@ -24,9 +24,6 @@
     <ClCompile Include="Grid.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="InitialCondition.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
     <ClCompile Include="fileManagement.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
@@ -34,6 +31,9 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="FileComboBox.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="GridInitialCondition.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -61,5 +61,6 @@
     <None Include="InitialCondition.json">
       <Filter>Pliki zasobów</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

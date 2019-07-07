@@ -13,27 +13,26 @@ FileComboBox::~FileComboBox()
 
 std::shared_ptr<tgui::ComboBox>& FileComboBox::getFileComboBoxPtr()
 {
-	return fileComboBox;
+	return this->fileComboBox;
 }
 
 std::vector<std::filesystem::path>& FileComboBox::getPaths()
 {
-	return paths;
+	return this->paths;
 }
 
 std::filesystem::path FileComboBox::getPath(unsigned index)
 {
-	return paths[index];
+	return this->paths[index];
 }
 
 void FileComboBox::addFiles()
 {
-	// path to directory";
-	std::string path = "Patterns";
+
 	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
-		fileComboBox->addItem(entry.path().filename().generic_string());
-		paths.push_back(entry.path());
+		this->fileComboBox->addItem(entry.path().filename().generic_string());
+		this->paths.push_back(entry.path());
 	}
 }
 
@@ -45,9 +44,9 @@ int FileComboBox::getSelectedIndex()
 
 bool FileComboBox::isChanged()
 {
-	if (selectedIndex != fileComboBox->getSelectedItemIndex())
+	if (this->selectedIndex != this->fileComboBox->getSelectedItemIndex())
 	{
-		selectedIndex = fileComboBox->getSelectedItemIndex();
+		this->selectedIndex = this->fileComboBox->getSelectedItemIndex();
 		return true;
 	}
 	return false;

@@ -23,6 +23,7 @@ class Grid
 	unsigned int gridWindowWidth = 0;
 	vector <vector<shared_ptr<Cell>>> cells;
 	vector <vector<int>> previousStatus;
+	VertexArray vertexArray; 
 
 public:
 	Grid() = delete;
@@ -35,8 +36,10 @@ public:
 
 	void printGridSFML(RenderWindow&);
 	void clearGrid();
-	unsigned int checkNeighbourhood(vector <vector<bool>>, int, int, bool verticalCondition, bool horizontalCondition);
+	unsigned int checkNeighbourhood(vector <vector<bool>> &, int, int, bool verticalCondition, bool horizontalCondition);
+	vector <vector<unsigned>> checkNeighbourhoodMatrix(bool verticalCondition, bool horizontalCondition);
 	void calculateNextGeneration(bool verticalCondition, bool horizontalConditiontion);
+	void calculateNextGenerationMatrix(bool verticalCondition, bool horizontalConditiontion);
 	void oneGenerationBack();
 
 	string encodeGrid();

@@ -15,18 +15,18 @@ MainStage::MainStage(unsigned int x, unsigned int y)
 
 std::shared_ptr<sf::RenderWindow> MainStage::getAppWindow()
 {
-	return appWindow;
+	return this->appWindow;
 }
 
 
 tgui::Label::Ptr MainStage::getLabel(string key)
 {
-	return labels[key];
+	return this->labels[key];
 }
 
 std::shared_ptr<tgui::Gui> MainStage::getGui()
 {
-	return gui;
+	return this->gui;
 }
 
 unsigned MainStage::getFpsLimit()
@@ -38,9 +38,6 @@ unsigned int MainStage::getPrintIntervalMillis()
 {
 	return this->printIntervalMillis;
 }
-
-
-
 
 bool MainStage::isGridLoaded()
 {
@@ -126,23 +123,23 @@ void MainStage::eventListeners(sf::Event & event, Grid grid, GridInitialConditio
 	{
 		fpsLimit = slider->getValue();
 		appWindow->setFramerateLimit(fpsLimit);
-		printIntervalMillis = (1.0 / fpsLimit) * 1000;
+		printIntervalMillis = static_cast<unsigned int>((1.0 / fpsLimit) * 1000);
 		labels["setFpsLimit"]->setText(to_string(fpsLimit));
 	}
 
 	sf::Mouse mouse;
 	sf::Vector2f position = sf::Vector2f(mouse.getPosition(*this->getAppWindow()));
-	for (int i = 0; i < grid.getSizeX(); i++)
+	for (unsigned i = 0; i < grid.getSizeX(); i++)
 	{
-		for (int j = 0; j < grid.getSizeY(); j++)
+		for (unsigned j = 0; j < grid.getSizeY(); j++)
 		{
 			// checking mouse position on grid
 			sf::FloatRect fr;
 			fr.left = grid.getCell(i, j)->getPositionX();
 			fr.top = grid.getCell(i, j)->getPositionY();
 			sf::Vector2u windowSize = this->getAppWindow()->getSize();
-			fr.width = windowWidth * 1.0 / grid.getSizeX();
-			fr.height = windowHight * 1.0 / grid.getSizeY();
+			fr.width = static_cast<int>(windowWidth * 1.0 / grid.getSizeX());
+			fr.height = static_cast<int>(windowHight * 1.0 / grid.getSizeY());
 
 			if (fr.contains(position))
 			{
@@ -166,7 +163,6 @@ void MainStage::eventListeners(sf::Event & event, Grid grid, GridInitialConditio
 
 void MainStage::loadWidgets()
 {
-	
 	this->gui->loadWidgetsFromFile("./form.txt");
 	
 	std::vector<tgui::Widget::Ptr> w = gui->getWidgets();

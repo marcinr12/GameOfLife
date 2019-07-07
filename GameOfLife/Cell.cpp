@@ -4,14 +4,16 @@ int Cell::cellNumber = 0;
 
 Cell::Cell()
 {
-	ID = cellNumber;
-	cellNumber++;
+	this->ID = cellNumber;
+	this->cellNumber++;
+	this->positionX = 0;
+	this->status = false;
 }
 
 Cell::Cell(const Cell & cell)
 {
-	ID = cellNumber;
-	cellNumber++;
+	this->ID = cellNumber;
+	this->cellNumber++;
 	this->positionX = cell.positionX;
 	this->positionY = cell.positionY;
 	this->status = cell.status;
@@ -19,22 +21,22 @@ Cell::Cell(const Cell & cell)
 
 Cell::Cell(unsigned int x, unsigned int y, bool status)
 {
-	ID = cellNumber;
-	cellNumber++;
-	positionX = x;
-	positionY = y;
+	this->ID = cellNumber;
+	this->cellNumber++;
+	this->positionX = x;
+	this->positionY = y;
 	this->status = status;
 }
 
 
 void Cell::setPositionX(unsigned int x)
 {
-	positionX = x;
+	this->positionX = x;
 }
 
 void Cell::setPositionY(unsigned int y)
 {
-	positionY = y;
+	this->positionY = y;
 }
 
 void Cell::setStatus(bool status)
@@ -44,21 +46,21 @@ void Cell::setStatus(bool status)
 
 unsigned int Cell::getID()
 {
-	return ID;
+	return this->ID;
 }
 
 unsigned int Cell::getPositionX()
 {
-	return positionX;
+	return this->positionX;
 }
 
 unsigned int Cell::getPositionY()
 {
-	return positionY;
+	return this->positionY;
 }
 
 bool Cell::getStatus()
 {
-	return status;
+	return this->status;
 }
 

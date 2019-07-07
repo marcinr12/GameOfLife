@@ -4,6 +4,7 @@ GridInitialCondition::GridInitialCondition()
 {
 	boost::property_tree::ptree tree;
 	boost::property_tree::read_json("InitialCondition.json", tree);
+
 	this->sizeX = tree.get<unsigned int>("sizeX");
 	this->sizeY = tree.get<unsigned int>("sizeY");
 	this->verticalCondition = tree.get<bool>("verticalCondition");
@@ -20,12 +21,12 @@ GridInitialCondition::GridInitialCondition(unsigned int sizeX, unsigned int size
 
 unsigned int GridInitialCondition::getSizeX()
 {
-	return sizeX;
+	return this->sizeX;
 }
 
 unsigned int GridInitialCondition::getSizeY()
 {
-	return sizeY;
+	return this->sizeY;
 }
 
 bool GridInitialCondition::getVerticalCongition()

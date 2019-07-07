@@ -12,5 +12,4 @@ namespace fileManagement
 {
 	void saveStateToFile(std::string, std::string);
 	std::string loadStateFromFile(fs::path path, int, int);
-
 }
